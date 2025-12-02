@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live Tracking</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+
+<body style="font-family: Arial; text-align: center; margin-top: 80px;">
+
+<h2>Fetching Live Location...</h2>
+<p id="info">Please wait</p>
+
+<script>
+  // TODO: Replace with YOUR Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyA42rMsQyFlUpyvYPsG5zmyX_8EShTSDIs",
+    authDomain: "safespeak-a2e72.firebaseapp.com",
+    databaseURL: "https://safespeak-a2e72-default-rtdb.firebaseio.com",
+    projectId: "safespeak-a2e72",
+    storageBucket: "safespeak-a2e72.firebasestorage.app",
+    messagingSenderId: "747041874344",
+    appId: "1:747041874344:web:2ed224f668a24456303d9d"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Read "?user=ARPITA123" from URL
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get("user");
+
+  if(!userId){
+    document.getElementById("info").innerText = "User ID missing!";
+    throw new Error("User ID missing");
+  }
+
+  // Watch girl's location LIVE
+  db.ref("users/" + userId).on("value", snapshot => {
+    const data = snapshot.val();
+    if(data){
+        const lat = data.lat;
+        const lon = data.lon;
+
+        document.getElementById("info").innerText =
+            "Girl's Live Location: " + lat + ", " + lon;
+
+        // Redirect to Google Maps navigation instantly
+        window.location.href =
+          `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}&travelmode=walking`;
+    }
+  });
+</script>
+
+</body>
+</html>
